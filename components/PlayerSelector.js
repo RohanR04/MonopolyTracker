@@ -3,15 +3,15 @@
 export default function PlayerSelector({ players, selectedPlayers, onTogglePlayer }) {
   if (players.length === 0) {
     return (
-      <div className="bg-white/10 backdrop-blur-md rounded-xl p-4">
-        <p className="text-red-200 text-sm">No players added yet. Add players first.</p>
+      <div className="bg-white/10 dark:bg-gray-800/90 backdrop-blur-md rounded-xl p-4">
+        <p className="text-red-200 dark:text-gray-400 text-sm">No players added yet. Add players first.</p>
       </div>
     )
   }
 
   return (
     <div className="space-y-2">
-      <label className="block text-white font-medium">Select Players (min 2)</label>
+      <label className="block text-white dark:text-gray-300 font-medium">Select Players (min 2)</label>
       <div className="grid grid-cols-2 gap-2">
         {players.map((player) => {
           const isSelected = selectedPlayers.includes(player.name)
@@ -22,8 +22,8 @@ export default function PlayerSelector({ players, selectedPlayers, onTogglePlaye
               onClick={() => onTogglePlayer(player.name)}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 isSelected
-                  ? 'bg-green-600 text-white'
-                  : 'bg-white/10 backdrop-blur-md text-white hover:bg-white/20'
+                  ? 'bg-green-600 dark:bg-green-700 text-white'
+                  : 'bg-white/10 dark:bg-gray-700/50 backdrop-blur-md text-white dark:text-gray-300 hover:bg-white/20 dark:hover:bg-gray-700'
               }`}
             >
               {player.name}
@@ -32,7 +32,7 @@ export default function PlayerSelector({ players, selectedPlayers, onTogglePlaye
         })}
       </div>
       {selectedPlayers.length > 0 && (
-        <p className="text-red-200 text-sm">
+        <p className="text-red-200 dark:text-gray-400 text-sm">
           {selectedPlayers.length} player{selectedPlayers.length !== 1 ? 's' : ''} selected
         </p>
       )}

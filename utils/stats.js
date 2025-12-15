@@ -9,7 +9,19 @@ export function getPlayerStats(games, players) {
     const playerGames = games.filter((game) =>
       game.players.includes(player.name)
     );
-    const wins = games.filter((game) => game.winner === player.name).length;
+    // Count wins: single winner OR group win (winners array)
+    const wins = games.filter((game) => {
+      // Single winner (backward compatible)
+      if (game.winner === player.name) return true;
+      // Group win (new format)
+      if (
+        game.winners &&
+        Array.isArray(game.winners) &&
+        game.winners.includes(player.name)
+      )
+        return true;
+      return false;
+    }).length;
     const gamesPlayed = playerGames.length;
     const winRate =
       gamesPlayed > 0 ? ((wins / gamesPlayed) * 100).toFixed(1) : 0;
@@ -29,7 +41,7 @@ export function getPlayerStats(games, players) {
   return playerStats.sort((a, b) => b.wins - a.wins);
 }
 
-import { getDate } from './dateUtils'
+import { getDate } from "./dateUtils";
 
 /**
  * Calculate current and best winning streaks for a player
@@ -43,10 +55,22 @@ export function calculateStreaks(games, playerName) {
     .filter((game) => game.players.includes(playerName))
     .sort((a, b) => getDate(b.date) - getDate(a.date));
 
+  // Helper function to check if player won (handles both single and group wins)
+  const didPlayerWin = (game) => {
+    if (game.winner === playerName) return true;
+    if (
+      game.winners &&
+      Array.isArray(game.winners) &&
+      game.winners.includes(playerName)
+    )
+      return true;
+    return false;
+  };
+
   // Calculate current streak from most recent game backwards
   let currentStreak = 0;
   for (const game of playerGames) {
-    if (game.winner === playerName) {
+    if (didPlayerWin(game)) {
       currentStreak++;
     } else {
       break; // Streak broken
@@ -62,7 +86,7 @@ export function calculateStreaks(games, playerName) {
   let tempStreak = 0;
 
   for (const game of allPlayerGames) {
-    if (game.winner === playerName) {
+    if (didPlayerWin(game)) {
       tempStreak++;
       bestStreak = Math.max(bestStreak, tempStreak);
     } else {
@@ -106,13 +130,12 @@ export function getGameTypeStats(games) {
   };
 
   games.forEach((game) => {
-    if (game.gameType === 'online') {
+    if (game.gameType === "online") {
       stats.online++;
-    } else if (game.gameType === 'irl') {
+    } else if (game.gameType === "irl") {
       stats.irl++;
     }
   });
 
   return stats;
 }
-
